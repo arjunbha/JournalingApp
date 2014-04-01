@@ -2,62 +2,120 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+	<!--<![endif]-->
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Journaling App</title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+		<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-        <link rel="stylesheet" href="css/normalize.css">
-        <link rel="stylesheet" href="css/main.css">
-        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
-        <script>
-        $(document).delegate('#textbox', 'keydown', function(e) {
-  var keyCode = e.keyCode || e.which;
+		<link rel="stylesheet" href="css/normalize.css">
+		<link rel="stylesheet" href="css/main.css">
+		<script src="js/vendor/modernizr-2.6.2.min.js"></script>
 
-  if (keyCode == 9) {
-    e.preventDefault();
-    var start = $(this).get(0).selectionStart;
-    var end = $(this).get(0).selectionEnd;
+	</head>
+	<body>
+		<div id="dashboard">
+			Dashboard
+		</div>
+		<div id="notebook">
+			<div id="notebookToolBar">
+				<button>
+					Font
+				</button>
+			</div>
+			<div id="pad">
+				<textarea id="textbox"></textarea>				
+			</div>
+		</div>
+		<div id="doodle">
+			<script>
+				window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')
+			</script>
+			<script>
+				var canvasDiv = document.getElementById('doodle');
+				canvas = document.createElement('canvas');
+				canvas.setAttribute('id', 'canvas');
+				canvasDiv.appendChild(canvas);
+				if ( typeof G_vmlCanvasManager != 'undefined') {
+					canvas = G_vmlCanvasManager.initElement(canvas);
+				}
+				context = canvas.getContext("2d");
+				$('#canvas').mousedown(function(e) {
+					var mouseX = e.pageX - this.offsetLeft;
+					var mouseY = e.pageY - this.offsetTop;
 
-    // set textarea value to: text before caret + tab + text after caret
-    $(this).val($(this).val().substring(0, start)
-                + "\t"
-                + $(this).val().substring(end));
+					paint = true;
+					addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+					redraw();
+				});
+				$('#canvas').mousemove(function(e) {
+					if (paint) {
+						addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+						redraw();
+					}
+				});
+				$('#canvas').mouseup(function(e) {
+					paint = false;
+				});
+				$('#canvas').mouseleave(function(e) {
+					paint = false;
+				});
+				var clickX = new Array();
+				var clickY = new Array();
+				var clickDrag = new Array();
+				var paint;
 
-    // put caret at right position again
-    $(this).get(0).selectionStart =
-    $(this).get(0).selectionEnd = start + 1;
-  }
-});</script>
-    </head>
-    <body>
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+				function addClick(x, y, dragging) {
+					clickX.push(x);
+					clickY.push(y);
+					clickDrag.push(dragging);
+				}
 
-        <!-- Add your site or application content here -->
-        <textarea id="#textbox">
-        </textarea>
-        
+				function redraw() {
+					context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+					// Clears the canvas
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
-        <script src="js/plugins.js"></script>
-        <script src="js/main.js"></script>
+					context.strokeStyle = "#df4b26";
+					context.lineJoin = "round";
+					context.lineWidth = 5;
 
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-        <script>
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='//www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-XXXXX-X');ga('send','pageview');
-        </script>
-    </body>
+					for (var i = 0; i < clickX.length; i++) {
+						context.beginPath();
+						if (clickDrag[i] && i) {
+							context.moveTo(clickX[i - 1], clickY[i - 1]);
+						} else {
+							context.moveTo(clickX[i] - 1, clickY[i]);
+						}
+						context.lineTo(clickX[i], clickY[i]);
+						context.closePath();
+						context.stroke();
+					}
+				}
+			</script>
+			<script>
+				$(document).delegate('#textbox', 'keydown', function(e) {
+					var keyCode = e.keyCode || e.which;
+
+					if (keyCode == 9) {
+						e.preventDefault();
+						var start = $(this).get(0).selectionStart;
+						var end = $(this).get(0).selectionEnd;
+
+						// set textarea value to: text before caret + tab + text after caret
+						$(this).val($(this).val().substring(0, start) + "\t" + $(this).val().substring(end));
+
+						// put caret at right position again
+						$(this).get(0).selectionStart = $(this).get(0).selectionEnd = start + 1;
+					}
+				});
+			</script>
+			<script src="js/plugins.js"></script>
+			<script src="js/main.js"></script>
+	</body>
 </html>
