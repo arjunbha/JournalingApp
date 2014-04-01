@@ -25,19 +25,24 @@
 		</div>
 		<div id="notebook">
 			<div id="notebookToolBar">
-				<button>
-					Font
-				</button>
+				<select id="changeFF">
+					<option value="Arial">Arial</option>
+					<option value="Verdana">Verdana </option>
+					<option value="Impact">Impact </option>
+					<option value="Comic Sans MS">Comic Sans MS</option>
+				</select>
 			</div>
-			<div id="pad">
-				<textarea id="textbox"></textarea>				
-			</div>
+			<textarea id="textbox"></textarea>
 		</div>
 		<div id="doodle">
 			<script>
 				window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')
 			</script>
 			<script>
+				$("#changeFF").change(function() {
+					$('textarea').css("font-family", $(this).val());
+				});
+
 				var canvasDiv = document.getElementById('doodle');
 				canvas = document.createElement('canvas');
 				canvas.setAttribute('id', 'canvas');
