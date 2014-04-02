@@ -31,96 +31,72 @@
 					<option value="Impact">Impact </option>
 					<option value="Comic Sans MS">Comic Sans MS</option>
 				</select>
+				<select id="changeColor">
+					<option class="black" value="black">Black</option>
+					<option class="white" value="white">White</option>
+					<option class="red" value="red">Red</option>
+					<option class="yellow" value="yellow">Yellow</option>
+					<option class="green" value="green">Green</option>
+				</select>
 			</div>
 			<textarea id="textbox"></textarea>
 		</div>
 		<div id="doodle">
-			<script>
-				window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')
-			</script>
-			<script>
-				$("#changeFF").change(function() {
-					$('textarea').css("font-family", $(this).val());
-				});
+			<canvas id="c"></canvas>
+		</div>
+		<script>
+			window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')
+		</script>
+		<script>
+				var el = document.getElementById('c');
+				var ctx = el.getContext('2d');
+				ctx.canvas.width  = document.getElementById('doodle').offsetWidth;
+  				ctx.canvas.height = document.getElementById('doodle').offsetHeight;
+				var isDrawing;
 
-				var canvasDiv = document.getElementById('doodle');
-				canvas = document.createElement('canvas');
-				canvas.setAttribute('id', 'canvas');
-				canvasDiv.appendChild(canvas);
-				if ( typeof G_vmlCanvasManager != 'undefined') {
-					canvas = G_vmlCanvasManager.initElement(canvas);
-				}
-				context = canvas.getContext("2d");
-				$('#canvas').mousedown(function(e) {
-					var mouseX = e.pageX - this.offsetLeft;
-					var mouseY = e.pageY - this.offsetTop;
-
-					paint = true;
-					addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
-					redraw();
-				});
-				$('#canvas').mousemove(function(e) {
-					if (paint) {
-						addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
-						redraw();
+				el.onmousedown = function(e) {
+					isDrawing = true;
+					ctx.moveTo(e.clientX-$("canvas").offset().left, 
+						e.clientY-$("canvas").offset().top);
+					console.log("MD" + e.clientY + " " + $("canvas").offset().top);
+				};
+				el.onmousemove = function(e) {
+					if (isDrawing) {
+						console.log("MD" + "MD" + e.screenY + " " + e.pageY);
+						ctx.lineTo(e.clientX-$("canvas").offset().left, 
+							e.clientY-$("canvas").offset().top);
+						ctx.stroke();
 					}
-				});
-				$('#canvas').mouseup(function(e) {
-					paint = false;
-				});
-				$('#canvas').mouseleave(function(e) {
-					paint = false;
-				});
-				var clickX = new Array();
-				var clickY = new Array();
-				var clickDrag = new Array();
-				var paint;
+				};
+				el.onmouseup = function() {
+					isDrawing = false;
+				};
+				//@ sourceURL=pen.js
+		</script>
+		<script>
+			$("#changeFF").change(function() {
+				$('textarea').css("font-family", $(this).val());
+			});
+			$("#changeColor").change(function() {
+				$('textarea').css("color", $(this).val());
+			});
+			$(document).delegate('#textbox', 'keydown', function(e) {
+				var keyCode = e.keyCode || e.which;
 
-				function addClick(x, y, dragging) {
-					clickX.push(x);
-					clickY.push(y);
-					clickDrag.push(dragging);
+				if (keyCode == 9) {
+					e.preventDefault();
+					var start = $(this).get(0).selectionStart;
+					var end = $(this).get(0).selectionEnd;
+
+					// set textarea value to: text before caret + tab + text after caret
+					$(this).val($(this).val().substring(0, start) + "\t" + $(this).val().substring(end));
+
+					// put caret at right position again
+					$(this).get(0).selectionStart = $(this).get(0).selectionEnd = start + 1;
 				}
-
-				function redraw() {
-					context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-					// Clears the canvas
-
-					context.strokeStyle = "#df4b26";
-					context.lineJoin = "round";
-					context.lineWidth = 5;
-
-					for (var i = 0; i < clickX.length; i++) {
-						context.beginPath();
-						if (clickDrag[i] && i) {
-							context.moveTo(clickX[i - 1], clickY[i - 1]);
-						} else {
-							context.moveTo(clickX[i] - 1, clickY[i]);
-						}
-						context.lineTo(clickX[i], clickY[i]);
-						context.closePath();
-						context.stroke();
-					}
-				}
-			</script>
-			<script>
-				$(document).delegate('#textbox', 'keydown', function(e) {
-					var keyCode = e.keyCode || e.which;
-
-					if (keyCode == 9) {
-						e.preventDefault();
-						var start = $(this).get(0).selectionStart;
-						var end = $(this).get(0).selectionEnd;
-
-						// set textarea value to: text before caret + tab + text after caret
-						$(this).val($(this).val().substring(0, start) + "\t" + $(this).val().substring(end));
-
-						// put caret at right position again
-						$(this).get(0).selectionStart = $(this).get(0).selectionEnd = start + 1;
-					}
-				});
-			</script>
-			<script src="js/plugins.js"></script>
-			<script src="js/main.js"></script>
+			});
+		</script>
+		<script src="js/plugins.js"></script>
+		<script src="js/main.js"></script>
 	</body>
 </html>
