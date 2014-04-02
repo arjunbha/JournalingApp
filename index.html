@@ -42,36 +42,89 @@
 			<textarea id="textbox"></textarea>
 		</div>
 		<div id="doodle">
+			<button id="clear">Clear</button>
 			<canvas id="c"></canvas>
 		</div>
 		<script>
 			window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')
 		</script>
 		<script>
-				var el = document.getElementById('c');
-				var ctx = el.getContext('2d');
-				ctx.canvas.width  = document.getElementById('doodle').offsetWidth;
-  				ctx.canvas.height = document.getElementById('doodle').offsetHeight;
-				var isDrawing;
+			function getRandomInt(min, max) {
+				return Math.floor(Math.random() * (max - min + 1)) + min;
+			}
 
-				el.onmousedown = function(e) {
-					isDrawing = true;
-					ctx.moveTo(e.clientX-$("canvas").offset().left, 
-						e.clientY-$("canvas").offset().top);
-					console.log("MD" + e.clientY + " " + $("canvas").offset().top);
-				};
-				el.onmousemove = function(e) {
-					if (isDrawing) {
-						console.log("MD" + "MD" + e.screenY + " " + e.pageY);
-						ctx.lineTo(e.clientX-$("canvas").offset().left, 
-							e.clientY-$("canvas").offset().top);
-						ctx.stroke();
-					}
-				};
-				el.onmouseup = function() {
-					isDrawing = false;
-				};
-				//@ sourceURL=pen.js
+			var el = document.getElementById('c');
+			var ctx = el.getContext('2d');
+			ctx.canvas.width = document.getElementById('doodle').offsetWidth;
+			ctx.canvas.height = document.getElementById('doodle').offsetHeight;
+
+			ctx.lineJoin = ctx.lineCap = 'round';
+			/*ctx.shadowBlur = 10;
+			 ctx.shadowColor = 'rgb(0, 0, 0)';*/
+
+			var isDrawing, points = [];
+
+			el.onmousedown = function(e) {
+				isDrawing = true;
+				points.push({
+					x : e.clientX - $("canvas").offset().left,
+					y : e.clientY - $("canvas").offset().top,
+					width : getRandomInt(3, 5)
+				});
+			};
+			
+			$('#clear').click(function() {
+				ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			});
+
+			el.onmousemove = function(e) {
+				if (!isDrawing)
+					return;
+
+				//ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+				points.push({
+					x : e.clientX - $("canvas").offset().left,
+					y : e.clientY - $("canvas").offset().top,
+					width : getRandomInt(3, 5)
+				});
+
+				for (var i = 1; i < points.length; i++) {
+					ctx.beginPath();
+					ctx.moveTo(points[i - 1].x, points[i - 1].y);
+					ctx.lineWidth = points[i].width;
+					ctx.lineTo(points[i].x, points[i].y);
+					ctx.stroke();
+				}
+			};
+
+			el.onmouseup = function() {
+				isDrawing = false;
+				points.length = 0;
+			};
+			/*
+			 var el = document.getElementById('c');
+			 var ctx = el.getContext('2d');
+			 ctx.canvas.width = document.getElementById('doodle').offsetWidth;
+			 ctx.canvas.height = document.getElementById('doodle').offsetHeight;
+			 var isDrawing;
+
+			 el.onmousedown = function(e) {
+			 isDrawing = true;
+			 ctx.moveTo(e.clientX - $("canvas").offset().left, e.clientY - $("canvas").offset().top);
+			 console.log("MD" + e.clientY + " " + $("canvas").offset().top);
+			 };
+			 el.onmousemove = function(e) {
+			 if (isDrawing) {
+			 console.log("MD" + "MD" + e.screenY + " " + e.pageY);
+			 ctx.lineTo(e.clientX - $("canvas").offset().left, e.clientY - $("canvas").offset().top);
+			 ctx.stroke();
+			 }
+			 };
+			 el.onmouseup = function() {
+			 isDrawing = false;
+			 };
+			 //@ sourceURL=pen.js*/
 		</script>
 		<script>
 			$("#changeFF").change(function() {
