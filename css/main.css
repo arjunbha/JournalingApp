@@ -33,12 +33,20 @@ textarea {
 	height: 99%;
 	border: 2px solid grey;
 }
-#doodle {
+#doodleContainer { 
 	float: right;
 	width: 25%;
 	height: 99%;
 	border: 2px solid grey;
 }
+#doodleModalContainer {
+	width:200px;
+	height:300px;
+}
+#doodle {
+	height: 99%;
+}
+
 canvas {
 	
 }
