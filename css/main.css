@@ -44,10 +44,12 @@ textarea {
 	height:300px;
 }
 #doodle {
-	height: 99%;
+	height: 280px;
 }
 
 canvas {
+	border: 1px solid grey;
+	margin-top:5px;
 	
 }
 select {

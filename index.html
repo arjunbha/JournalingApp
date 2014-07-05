@@ -78,8 +78,8 @@
 
 			var el = document.getElementById('c');
 			var ctx = el.getContext('2d');
-			ctx.canvas.width = document.getElementById('doodle').offsetWidth;
-			ctx.canvas.height = document.getElementById('doodle').offsetHeight;
+			ctx.canvas.width = $(".uk-modal-dialog").width();
+			ctx.canvas.height = $("#doodle").height();
 
 			ctx.lineJoin = ctx.lineCap = 'round';
 			/*ctx.shadowBlur = 10;
